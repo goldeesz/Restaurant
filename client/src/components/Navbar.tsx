@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAppContext } from "../context/AppContext.tsx";
@@ -6,7 +7,8 @@ import {
     X,
     LogOut,
     LayoutDashboard,
-    ShieldCheck
+    ShieldCheck,
+    ChevronDown,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -25,11 +27,11 @@ export default function Navbar() {
         };
 
         window.addEventListener("scroll", handleScroll);
+        handleScroll();
 
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // Закрываем мобильное меню при переходе на другую страницу
     useEffect(() => {
         setMobileMenuOpen(false);
         setDropdownOpen(false);
@@ -41,127 +43,132 @@ export default function Navbar() {
         } else {
             navigate("/dashboard");
         }
+
+        setMobileMenuOpen(false);
+        setDropdownOpen(false);
+    };
+
+    const handleLogout = () => {
+        setDropdownOpen(false);
+        setMobileMenuOpen(false);
+        logout();
     };
 
     const navLinkClass = (path: string) => {
-        const isActive = location.pathname === path ||
+        const isActive =
+            location.pathname === path ||
             (path !== "/" && location.pathname.startsWith(path));
 
-        return `text-sm transition-colors pb-1 border-b cursor-pointer ${
-            isActive
-                ? "text-secondary border-secondary"
-                : "text-[#F3EEE5]/75 hover:text-secondary border-transparent"
-        }`;
+        return `relative py-2 text-[13px] font-medium tracking-wide transition-colors duration-200
+            after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-[#702638]
+            after:transition-all after:duration-300
+            ${isActive
+                ? "text-[#702638] after:w-full"
+                : "text-[#756A66] hover:text-[#702638] after:w-0 hover:after:w-full"
+            }`;
     };
+
+    const mobileLinkClass =
+        "block py-2 text-[15px] font-medium text-[#493D3D] transition-colors hover:text-[#702638]";
 
     return (
         <nav
-            className={`fixed top-0 w-full z-40
-                bg-[#211B1D]/95 backdrop-blur-md
-                border-b border-secondary/20
-                transition-all duration-300
-                ${scrolled ? "h-16 shadow-lg shadow-black/20" : "h-20"}
-            `}
+            className={`fixed left-0 top-0 z-50 w-full border-b border-[#D8CBBB]/80 bg-[#FFFCF8]/95 backdrop-blur-xl transition-all duration-300 ${
+                scrolled
+                    ? "h-[68px] shadow-[0_5px_25px_rgba(41,33,38,0.07)]"
+                    : "h-[78px]"
+            }`}
         >
-            <div className="max-w-7xl mx-auto flex justify-between items-center h-full px-6 md:px-10">
+            <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 md:px-10">
 
                 {/* Логотип */}
-                <div className="flex items-center gap-12">
-                    <Link to="/" className="flex items-center">
-                        <img
-                            src="/logo.png"
-                            alt="Culinary Paradise"
-                            className="h-8 md:h-9 w-auto object-contain"
-                        />
+                <Link
+                    to="/"
+                    className="group flex shrink-0 flex-col leading-none"
+                    aria-label="Culinary Paradise — главная"
+                >
+                    <span className="font-display text-[24px] font-semibold tracking-[-0.04em] text-[#702638] transition-colors group-hover:text-[#491B2A] md:text-[27px]">
+                        Culinary
+                    </span>
+
+                    <span className="font-display text-[24px] font-semibold tracking-[-0.04em] text-[#702638] transition-colors group-hover:text-[#491B2A] md:text-[27px]">
+                        Paradise
+                    </span>
+
+                    <span className="mt-1 text-[8px] font-semibold tracking-[0.25em] text-[#A18455]">
+                        THE ART OF DINING
+                    </span>
+                </Link>
+
+                {/* Навигация для компьютера */}
+                <div className="hidden items-center gap-9 md:flex">
+                    <Link to="/" className={navLinkClass("/")}>
+                        Главная
                     </Link>
 
-                    {/* Навигация для компьютера */}
-                    <div className="hidden md:flex gap-8 items-center">
+                    <Link to="/search" className={navLinkClass("/search")}>
+                        Рестораны
+                    </Link>
 
-                        <Link to="/" className={navLinkClass("/")}>
-                            Главная
-                        </Link>
-
-                        <Link to="/search" className={navLinkClass("/search")}>
-                            Рестораны
-                        </Link>
-
-                        <button
-                            onClick={handleDashboardClick}
-                            className={`text-sm transition-colors pb-1 border-b cursor-pointer ${
-                                location.pathname === "/dashboard"
-                                    ? "text-secondary border-secondary"
-                                    : "text-[#F3EEE5]/75 hover:text-secondary border-transparent"
-                            }`}
-                        >
-                            Мои бронирования
-                        </button>
-
-                    </div>
+                    <button
+                        onClick={handleDashboardClick}
+                        className={`${navLinkClass("/dashboard")} cursor-pointer border-0 bg-transparent`}
+                    >
+                        Мои бронирования
+                    </button>
                 </div>
 
                 {/* Авторизация для компьютера */}
-                <div className="hidden md:flex items-center gap-6">
-
+                <div className="hidden items-center gap-5 md:flex">
                     {user ? (
                         <div className="relative">
-
                             <button
                                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                                className="flex items-center gap-2 text-sm
-                                    text-[#F3EEE5] hover:text-secondary
-                                    transition-colors cursor-pointer"
+                                aria-expanded={dropdownOpen}
+                                className="flex cursor-pointer items-center gap-2 rounded-full border border-[#D8CBBB] bg-white/60 py-1.5 pl-1.5 pr-3 transition-colors hover:border-[#702638]/50"
                             >
-                                <span className="size-8 rounded-full
-                                    bg-secondary/15 border border-secondary/50
-                                    flex items-center justify-center
-                                    text-secondary text-xs uppercase"
-                                >
+                                <span className="flex size-8 items-center justify-center rounded-full bg-[#702638] font-display text-sm text-white">
                                     {user.name.charAt(0)}
                                 </span>
 
-                                <span className="max-w-[120px] truncate">
+                                <span className="max-w-[110px] truncate text-[13px] font-medium text-[#493D3D]">
                                     {user.name.split(" ")[0]}
                                 </span>
+
+                                <ChevronDown
+                                    size={14}
+                                    className={`text-[#A18455] transition-transform ${
+                                        dropdownOpen ? "rotate-180" : ""
+                                    }`}
+                                />
                             </button>
 
-                            {/* Выпадающее меню */}
                             {dropdownOpen && (
-                                <div className="absolute right-0 mt-3 w-60
-                                    bg-[#211B1D] border border-secondary/30
-                                    shadow-xl rounded-lg py-2 z-50
-                                    animate-in fade-in slide-in-from-top-2 duration-200"
-                                >
-                                    <div className="px-4 py-3 border-b border-secondary/20">
-                                        <p className="text-sm text-secondary truncate">
+                                <div className="absolute right-0 top-full z-50 mt-3 w-64 overflow-hidden rounded-xl border border-[#D8CBBB] bg-[#FFFCF8] py-2 shadow-[0_15px_40px_rgba(41,33,38,0.13)]">
+                                    <div className="border-b border-[#E9DFD2] px-5 py-3">
+                                        <p className="truncate text-sm font-semibold text-[#702638]">
                                             {user.name}
                                         </p>
 
-                                        <p className="text-xs text-[#F3EEE5]/55 truncate">
+                                        <p className="mt-1 truncate text-xs text-[#8B8079]">
                                             {user.email}
                                         </p>
                                     </div>
 
                                     <button
                                         onClick={handleDashboardClick}
-                                        className="w-full flex items-center gap-3 px-4 py-3
-                                            text-sm text-[#F3EEE5]/75
-                                            hover:text-secondary hover:bg-white/5
-                                            transition-colors cursor-pointer text-left"
+                                        className="flex w-full cursor-pointer items-center gap-3 px-5 py-3 text-left text-[13px] text-[#493D3D] transition-colors hover:bg-[#F5F0E8] hover:text-[#702638]"
                                     >
-                                        <LayoutDashboard size={15} />
+                                        <LayoutDashboard size={16} />
                                         Мои бронирования
                                     </button>
 
                                     {user.role === "admin" && (
                                         <Link
                                             to="/admin/dashboard"
-                                            className="flex items-center gap-3 px-4 py-3
-                                                text-sm text-[#F3EEE5]/75
-                                                hover:text-secondary hover:bg-white/5
-                                                transition-colors"
+                                            className="flex items-center gap-3 px-5 py-3 text-[13px] text-[#493D3D] transition-colors hover:bg-[#F5F0E8] hover:text-[#702638]"
                                         >
-                                            <ShieldCheck size={15} />
+                                            <ShieldCheck size={16} />
                                             Панель администратора
                                         </Link>
                                     )}
@@ -169,26 +176,19 @@ export default function Navbar() {
                                     {user.role === "owner" && (
                                         <Link
                                             to="/owner/dashboard"
-                                            className="flex items-center gap-3 px-4 py-3
-                                                text-sm text-[#F3EEE5]/75
-                                                hover:text-secondary hover:bg-white/5
-                                                transition-colors"
+                                            className="flex items-center gap-3 px-5 py-3 text-[13px] text-[#493D3D] transition-colors hover:bg-[#F5F0E8] hover:text-[#702638]"
                                         >
-                                            <ShieldCheck size={15} />
+                                            <ShieldCheck size={16} />
                                             Кабинет ресторана
                                         </Link>
                                     )}
 
                                     <button
-                                        onClick={logout}
-                                        className="w-full flex items-center gap-3 px-4 py-3
-                                            text-sm text-red-300
-                                            hover:bg-white/5
-                                            transition-colors border-t border-secondary/20
-                                            text-left cursor-pointer"
+                                        onClick={handleLogout}
+                                        className="flex w-full cursor-pointer items-center gap-3 border-t border-[#E9DFD2] px-5 py-3 text-left text-[13px] text-[#A33D43] transition-colors hover:bg-[#FFF3F0]"
                                     >
-                                        <LogOut size={15} />
-                                        Выйти
+                                        <LogOut size={16} />
+                                        Выйти из аккаунта
                                     </button>
                                 </div>
                             )}
@@ -197,151 +197,120 @@ export default function Navbar() {
                         <>
                             <button
                                 onClick={() => setAuthModalOpen(true)}
-                                className="text-sm text-[#F3EEE5]/80
-                                    hover:text-secondary transition-colors cursor-pointer"
+                                className="cursor-pointer text-[13px] font-medium text-[#702638] transition-colors hover:text-[#491B2A]"
                             >
                                 Войти
                             </button>
 
                             <button
                                 onClick={() => setAuthModalOpen(true)}
-                                className="text-xs font-semibold tracking-wider
-                                    uppercase px-6 py-3
-                                    bg-secondary text-[#211B1D]
-                                    hover:bg-[#E8D5AD]
-                                    transition-soft cursor-pointer"
+                                className="rounded-md bg-[#702638] px-6 py-3 text-[11px] font-semibold tracking-[0.12em] text-white transition-all duration-300 hover:bg-[#491B2A] hover:shadow-lg hover:shadow-[#702638]/15"
                             >
-                                Регистрация
+                                РЕГИСТРАЦИЯ
                             </button>
                         </>
                     )}
                 </div>
 
-                {/* Кнопка мобильного меню */}
-                <div className="flex items-center md:hidden">
-                    <button
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="p-2 text-secondary hover:text-[#F3EEE5]
-                            transition-colors cursor-pointer"
-                        aria-label="Открыть меню"
-                    >
-                        {mobileMenuOpen
-                            ? <X size={25} />
-                            : <Menu size={25} />
-                        }
-                    </button>
-                </div>
+                {/* Мобильная кнопка */}
+                <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="rounded-md p-2 text-[#702638] transition-colors hover:bg-[#F5F0E8] md:hidden"
+                    aria-label={mobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
+                    aria-expanded={mobileMenuOpen}
+                >
+                    {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
             </div>
 
             {/* Мобильное меню */}
             {mobileMenuOpen && (
-                <div className="md:hidden fixed inset-x-0 top-16
-                    bg-[#211B1D] border-b border-secondary/30
-                    py-6 px-6 z-50 shadow-xl
-                    flex flex-col gap-5
-                    animate-in slide-in-from-top duration-300"
-                >
-                    <Link
-                        to="/"
-                        className="text-base text-[#F3EEE5] hover:text-secondary"
-                    >
-                        Главная
-                    </Link>
+                <div className="absolute left-0 top-full z-50 w-full border-t border-[#D8CBBB] bg-[#FFFCF8] px-6 pb-7 pt-5 shadow-[0_15px_30px_rgba(41,33,38,0.09)] md:hidden">
+                    <div className="flex flex-col gap-3">
+                        <Link to="/" className={mobileLinkClass}>
+                            Главная
+                        </Link>
 
-                    <Link
-                        to="/search"
-                        className="text-base text-[#F3EEE5] hover:text-secondary"
-                    >
-                        Рестораны
-                    </Link>
+                        <Link to="/search" className={mobileLinkClass}>
+                            Рестораны
+                        </Link>
 
-                    <button
-                        onClick={handleDashboardClick}
-                        className="text-base text-[#F3EEE5]
-                            hover:text-secondary text-left cursor-pointer"
-                    >
-                        Мои бронирования
-                    </button>
+                        <button
+                            onClick={handleDashboardClick}
+                            className={`${mobileLinkClass} cursor-pointer text-left`}
+                        >
+                            Мои бронирования
+                        </button>
 
-                    <div className="border-t border-secondary/20 my-2" />
+                        <div className="my-2 border-t border-[#E9DFD2]" />
 
-                    {user ? (
-                        <div className="flex flex-col gap-4">
+                        {user ? (
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center gap-3">
+                                    <span className="flex size-10 items-center justify-center rounded-full bg-[#702638] font-display text-white">
+                                        {user.name.charAt(0)}
+                                    </span>
 
-                            <div className="flex items-center gap-3">
-                                <span className="w-10 h-10 rounded-full
-                                    bg-secondary/15 border border-secondary/40
-                                    flex items-center justify-center
-                                    text-secondary text-sm uppercase"
-                                >
-                                    {user.name.charAt(0)}
-                                </span>
-
-                                <div>
-                                    <p className="text-sm text-secondary">
-                                        {user.name}
-                                    </p>
-
-                                    <p className="text-xs text-[#F3EEE5]/55">
-                                        {user.email}
-                                    </p>
+                                    <div className="min-w-0">
+                                        <p className="truncate text-sm font-semibold text-[#702638]">
+                                            {user.name}
+                                        </p>
+                                        <p className="truncate text-xs text-[#8B8079]">
+                                            {user.email}
+                                        </p>
+                                    </div>
                                 </div>
+
+                                {user.role === "admin" && (
+                                    <Link
+                                        to="/admin/dashboard"
+                                        className={mobileLinkClass}
+                                    >
+                                        Панель администратора
+                                    </Link>
+                                )}
+
+                                {user.role === "owner" && (
+                                    <Link
+                                        to="/owner/dashboard"
+                                        className={mobileLinkClass}
+                                    >
+                                        Кабинет ресторана
+                                    </Link>
+                                )}
+
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex cursor-pointer items-center gap-2 py-2 text-left text-sm text-[#A33D43]"
+                                >
+                                    <LogOut size={16} />
+                                    Выйти из аккаунта
+                                </button>
                             </div>
-
-                            <Link
-                                to="/dashboard"
-                                className="text-sm text-[#F3EEE5]/80 hover:text-secondary"
-                            >
-                                Мои бронирования
-                            </Link>
-
-                            {user.role === "admin" && (
-                                <Link
-                                    to="/admin/dashboard"
-                                    className="text-sm text-[#F3EEE5]/80 hover:text-secondary"
+                        ) : (
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={() => {
+                                        setAuthModalOpen(true);
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className="w-full rounded-md border border-[#702638] py-3 text-sm font-medium text-[#702638]"
                                 >
-                                    Панель администратора
-                                </Link>
-                            )}
+                                    Войти
+                                </button>
 
-                            {user.role === "owner" && (
-                                <Link
-                                    to="/owner/dashboard"
-                                    className="text-sm text-[#F3EEE5]/80 hover:text-secondary"
+                                <button
+                                    onClick={() => {
+                                        setAuthModalOpen(true);
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className="w-full rounded-md bg-[#702638] py-3 text-sm font-semibold text-white"
                                 >
-                                    Кабинет ресторана
-                                </Link>
-                            )}
-
-                            <button
-                                onClick={logout}
-                                className="text-sm text-red-300 text-left cursor-pointer"
-                            >
-                                Выйти
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col gap-3">
-
-                            <button
-                                onClick={() => setAuthModalOpen(true)}
-                                className="w-full border border-secondary/40
-                                    text-[#F3EEE5] py-3 text-sm
-                                    hover:border-secondary cursor-pointer"
-                            >
-                                Войти
-                            </button>
-
-                            <button
-                                onClick={() => setAuthModalOpen(true)}
-                                className="w-full bg-secondary text-[#211B1D]
-                                    py-3 text-sm font-semibold
-                                    hover:bg-[#E8D5AD] cursor-pointer"
-                            >
-                                Регистрация
-                            </button>
-                        </div>
-                    )}
+                                    Регистрация
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </nav>
