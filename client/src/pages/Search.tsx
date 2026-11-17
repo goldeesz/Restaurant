@@ -18,7 +18,8 @@ import {
     SearchXIcon,
 } from "lucide-react";
 
-import { dummyRestaurant } from "../assets/assets.ts";
+import api from "../lib/api.ts";
+import toast from "react-hot-toast";
 
 export default function Search() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -57,9 +58,15 @@ export default function Search() {
     // Загрузка ресторанов
     useEffect(() => {
         const fetchRestaurants = async () => {
-            setLoading(true);
-            setRestaurants(dummyRestaurant);
-            setLoading(false);
+           try {
+            setLoading(true)
+            const res = await api.get(`/restaurants${searchParams.toString}`)
+            setRestaurants(res.data)
+           } catch (error: any) {
+            toast.error(error?.response?.data?.message || error?.message)
+           }finally{
+            setLoading(false)
+           }
         };
 
         fetchRestaurants();

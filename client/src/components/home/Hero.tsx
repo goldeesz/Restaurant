@@ -42,7 +42,7 @@ export default function Hero() {
             <div className="relative z-10 w-full max-w-7xl px-6 md:px-10 text-center">
 
                 <span className="text-xs md:text-sm text-[#E8D5AD] tracking-[0.3em] uppercase block mb-5">
-                    Искусство вкуса. Искусство впечатлений.
+                    Искусство вкуса
                 </span>
 
                 <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-[#F5F0E8] mb-6 max-w-4xl mx-auto leading-[1.15] font-medium tracking-tight">
@@ -54,7 +54,7 @@ export default function Hero() {
 
                 <p className="text-sm md:text-base text-[#F5F0E8]/85 max-w-2xl mx-auto mb-12 leading-relaxed">
                     Откройте для себя мир изысканной кухни,
-                    атмосферных ресторанов и незабываемых впечатлений.
+                    атмосферных ресторанов и незабываемых впечатлений
                 </p>
 
                 {/* Форма поиска */}

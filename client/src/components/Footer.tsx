@@ -9,18 +9,26 @@ export default function Footer() {
 
                 {/* Логотип и описание */}
                 <div className="lg:col-span-1">
-                    <Link to="/" className="block mb-4">
-                        <img
-                            src="/logo.svg"
-                            alt="Culinary Paradise"
-                            className="h-11 mt-1.5"
-                        />
+                    <Link
+                        to="/"
+                        className="group inline-flex flex-col leading-none mb-5"
+                        aria-label="Culinary Paradise — главная"
+                    >
+                        <span className="font-display text-[27px] font-semibold tracking-[-0.04em] text-[#702638] group-hover:text-[#491B2A] transition-colors">
+                            Culinary
+                        </span>
+
+                        <span className="font-display text-[27px] font-semibold tracking-[-0.04em] text-[#702638] group-hover:text-[#491B2A] transition-colors">
+                            Paradise
+                        </span>
+
+                        <span className="mt-1.5 text-[8px] font-semibold tracking-[0.25em] text-[#A18455]">
+                            THE ART OF DINING
+                        </span>
                     </Link>
 
                     <p className="text-[#756A66] text-sm leading-relaxed pr-4">
-                        Откройте для себя мир особенных впечатлений.
-                        Находите особенные рестораны, выбирайте удобное время
-                        и бронируйте столики для незабываемых встреч
+                        Откройте для себя мир особенных впечатлений
                     </p>
                 </div>
 
