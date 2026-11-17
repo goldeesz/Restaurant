@@ -50,21 +50,22 @@ export const dummyReviews = [
 export const dummyRating = 4.8;
 export const dummyReviewCount = 124;
 
+
 export const footerSections = [
     {
-        title: "COMPANY",
+        title: "О КОМПАНИИ",
         links: [
-            { label: "About Us", path: "#" },
-            { label: "Partner with Us", path: "#" },
-            { label: "Careers", path: "#" },
+            { label: "О нас", path: "#" },
+            { label: "Партнёрам", path: "#" },
+            { label: "Карьера", path: "#" },
         ],
     },
     {
-        title: "LEGAL",
+        title: "ИНФОРМАЦИЯ",
         links: [
-            { label: "Terms of Service", path: "#" },
-            { label: "Privacy Policy", path: "#" },
-            { label: "Cookies", path: "#" },
+            { label: "Условия использования", path: "#" },
+            { label: "Политика конфиденциальности", path: "#" },
+            { label: "Использование файлов cookie", path: "#" },
         ],
     },
 ];
@@ -76,8 +77,8 @@ export const socialLinks = [
 ];
 
 export const bottomLinks = [
-    { label: "Terms", path: "#" },
-    { label: "Privacy", path: "#" },
+    { label: "Условия использования", path: "#" },
+    { label: "Конфиденциальность", path: "#" },
 ];
 
 export const cuisines = [

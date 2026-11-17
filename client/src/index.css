@@ -1,66 +1,88 @@
 @import "tailwindcss";
 
 @theme {
-  --color-surface: #f9f9f9;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f3f4;
-  --color-on-surface: #1a1c1c;
-  --color-outline-variant: #c4c7c7;
-  --color-primary: #000000;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #1c1b1b;
-  --color-on-primary-container: #858383;
-  --color-secondary: #775a19;
-  --color-on-secondary: #ffffff;
-  --color-secondary-container: #fed488;
-  --color-on-secondary-container: #785a1a;
-  --color-error: #ba1a1a;
-  --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
+  /* Основные поверхности */
+  --color-background: #F5F0E8;
+  --color-surface: #F5F0E8;
+  --color-surface-container-lowest: #FFFCF8;
+  --color-surface-container-low: #E9DFD2;
 
-  /* Fonts */
+  /* Текст */
+  --color-on-surface: #292126;
+  --color-outline-variant: #D8CBBB;
+
+  /* Бордовая палитра */
+  --color-primary: #702638;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #491B2A;
+  --color-on-primary-container: #F5F0E8;
+
+  /* Золотые акценты */
+  --color-secondary: #C6A15B;
+  --color-on-secondary: #292126;
+  --color-secondary-container: #EAD8B5;
+  --color-on-secondary-container: #493719;
+
+  /* Ошибки */
+  --color-error: #BA1A1A;
+  --color-on-error: #FFFFFF;
+  --color-error-container: #FFDED9;
+  --color-on-error-container: #93000A;
+
+  /* Шрифты */
   --font-display: "Playfair Display", serif;
   --font-body: "Outfit", sans-serif;
 }
 
 body {
   font-family: var(--font-body);
+  background-color: #F5F0E8;
+  color: #292126;
+  margin: 0;
 }
 
-/* Custom Design Utilities */
+/* Мягкие тени */
 .ambient-shadow {
-  box-shadow: 0 30px 60px -15px rgba(26, 26, 26, 0.04);
+  box-shadow: 0 20px 50px rgba(41, 33, 38, 0.08);
 }
 
+/* Плавные переходы */
 .transition-soft {
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.35s ease;
 }
 
 .card-hover-effect {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
 }
 
 .card-hover-effect:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(26, 26, 26, 0.06);
+  box-shadow: 0 18px 35px rgba(41, 33, 38, 0.12);
 }
 
-/* Custom Scrollbar for premium visual */
+/* Полоса прокрутки */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f9f9f9;
+  background: #F5F0E8;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #dadada;
-  border-radius: 3px;
+  background: #C6A15B;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #c5a059;
+  background: #702638;
+}
+
+/* Выделение текста */
+::selection {
+  background: #702638;
+  color: #FFFFFF;
 }

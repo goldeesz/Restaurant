@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAppContext } from "../context/AppContext.tsx";
-import { Menu, X, LogOut, LayoutDashboard, ShieldCheck } from "lucide-react";
+import {
+    Menu,
+    X,
+    LogOut,
+    LayoutDashboard,
+    ShieldCheck
+} from "lucide-react";
 
 export default function Navbar() {
     const { user, logout, setAuthModalOpen } = useAppContext();
+
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -14,18 +21,18 @@ export default function Navbar() {
 
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 30) setScrolled(true);
-            else setScrolled(false);
+            setScrolled(window.scrollY > 30);
         };
 
         window.addEventListener("scroll", handleScroll);
+
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // Close mobile menu and dropdowns when location changes
+    // Закрываем мобильное меню при переходе на другую страницу
     useEffect(() => {
-        (() => setMobileMenuOpen(false))();
-        (() => setDropdownOpen(false))();
+        setMobileMenuOpen(false);
+        setDropdownOpen(false);
     }, [location]);
 
     const handleDashboardClick = () => {
@@ -36,94 +43,152 @@ export default function Navbar() {
         }
     };
 
+    const navLinkClass = (path: string) => {
+        const isActive = location.pathname === path ||
+            (path !== "/" && location.pathname.startsWith(path));
+
+        return `text-sm transition-colors pb-1 border-b cursor-pointer ${
+            isActive
+                ? "text-secondary border-secondary"
+                : "text-[#F3EEE5]/75 hover:text-secondary border-transparent"
+        }`;
+    };
+
     return (
         <nav
-            className={`fixed top-0 w-full z-40 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md h-16 shadow-sm border-b border-outline-variant/10" : "bg-transparent h-20 border-b border-transparent"}`}
+            className={`fixed top-0 w-full z-40
+                bg-[#211B1D]/95 backdrop-blur-md
+                border-b border-secondary/20
+                transition-all duration-300
+                ${scrolled ? "h-16 shadow-lg shadow-black/20" : "h-20"}
+            `}
         >
             <div className="max-w-7xl mx-auto flex justify-between items-center h-full px-6 md:px-10">
-                {/* Logo */}
+
+                {/* Логотип */}
                 <div className="flex items-center gap-12">
-                    <Link to="/">
-                        <img src="/logo.svg" alt="Logo" className={`h-8.5 ${scrolled || (location.pathname === "/" && "invert")}`} />
+                    <Link to="/" className="flex items-center">
+                        <img
+                            src="/logo.png"
+                            alt="Culinary Paradise"
+                            className="h-8 md:h-9 w-auto object-contain"
+                        />
                     </Link>
 
-                    {/* Desktop Navigation Links */}
+                    {/* Навигация для компьютера */}
                     <div className="hidden md:flex gap-8 items-center">
-                        <Link
-                            to="/"
-                            className={`text-sm transition-colors pb-1 border-b-2 cursor-pointer ${location.pathname === "/" ? (scrolled ? "text-secondary border-secondary" : "text-white border-white") : "text-black/55 hover:text-primary border-transparent"}`}
-                        >
-                            Discover
+
+                        <Link to="/" className={navLinkClass("/")}>
+                            Главная
                         </Link>
-                        <Link
-                            to="/search"
-                            className={`text-sm transition-colors pb-1 border-b-2 border-transparent cursor-pointer ${location.pathname.startsWith("/search") ? "text-secondary border-secondary" : scrolled || location.pathname !== "/" ? "text-black/55 hover:text-primary" : "text-white/80 hover:text-white"}}`}
-                        >
-                            Restaurants
+
+                        <Link to="/search" className={navLinkClass("/search")}>
+                            Рестораны
                         </Link>
+
                         <button
                             onClick={handleDashboardClick}
-                            className={`text-sm transition-colors pb-1 border-b-2 border-transparent cursor-pointer text-left ${location.pathname === "/dashboard" ? "text-secondary border-secondary" : scrolled || location.pathname !== "/" ? "text-black/55 hover:text-primary" : "text-white/80 hover:text-white"}`}
+                            className={`text-sm transition-colors pb-1 border-b cursor-pointer ${
+                                location.pathname === "/dashboard"
+                                    ? "text-secondary border-secondary"
+                                    : "text-[#F3EEE5]/75 hover:text-secondary border-transparent"
+                            }`}
                         >
-                            My Bookings
+                            Мои бронирования
                         </button>
+
                     </div>
                 </div>
 
-                {/* Auth Actions (Desktop) */}
+                {/* Авторизация для компьютера */}
                 <div className="hidden md:flex items-center gap-6">
+
                     {user ? (
                         <div className="relative">
+
                             <button
                                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                                className={`flex items-center gap-2 text-sm transition-colors cursor-pointer ${scrolled || location.pathname !== "/" ? "text-secondary" : "text-white"}`}
+                                className="flex items-center gap-2 text-sm
+                                    text-[#F3EEE5] hover:text-secondary
+                                    transition-colors cursor-pointer"
                             >
-                                <span className="size-7 rounded-full bg-secondary/20 border flex items-center justify-center text-xs uppercase">
+                                <span className="size-8 rounded-full
+                                    bg-secondary/15 border border-secondary/50
+                                    flex items-center justify-center
+                                    text-secondary text-xs uppercase"
+                                >
                                     {user.name.charAt(0)}
                                 </span>
-                                <span className="max-w-[120px] truncate">{user.name.split(" ")[0]}</span>
+
+                                <span className="max-w-[120px] truncate">
+                                    {user.name.split(" ")[0]}
+                                </span>
                             </button>
 
-                            {/* Dropdown Menu */}
+                            {/* Выпадающее меню */}
                             {dropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-56 bg-white border border-outline-variant/30 ambient-shadow rounded-lg py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    <div className="px-4 py-2 border-b border-outline-variant/10">
-                                        <p className="text-sm text-primary truncate">{user.name}</p>
-                                        <p className="text-xs text-black/55 truncate">{user.email}</p>
+                                <div className="absolute right-0 mt-3 w-60
+                                    bg-[#211B1D] border border-secondary/30
+                                    shadow-xl rounded-lg py-2 z-50
+                                    animate-in fade-in slide-in-from-top-2 duration-200"
+                                >
+                                    <div className="px-4 py-3 border-b border-secondary/20">
+                                        <p className="text-sm text-secondary truncate">
+                                            {user.name}
+                                        </p>
+
+                                        <p className="text-xs text-[#F3EEE5]/55 truncate">
+                                            {user.email}
+                                        </p>
                                     </div>
+
                                     <button
                                         onClick={handleDashboardClick}
-                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-black/55 hover:text-primary hover:bg-surface transition-colors cursor-pointer text-left"
+                                        className="w-full flex items-center gap-3 px-4 py-3
+                                            text-sm text-[#F3EEE5]/75
+                                            hover:text-secondary hover:bg-white/5
+                                            transition-colors cursor-pointer text-left"
                                     >
-                                        <LayoutDashboard size={14} />
-                                        My Bookings
+                                        <LayoutDashboard size={15} />
+                                        Мои бронирования
                                     </button>
 
                                     {user.role === "admin" && (
                                         <Link
                                             to="/admin/dashboard"
-                                            className="flex items-center gap-3 px-4 py-2.5 text-xs text-black/55 hover:text-primary hover:bg-surface transition-colors cursor-pointer"
+                                            className="flex items-center gap-3 px-4 py-3
+                                                text-sm text-[#F3EEE5]/75
+                                                hover:text-secondary hover:bg-white/5
+                                                transition-colors"
                                         >
-                                            <ShieldCheck size={14} />
-                                            Admin Panel
+                                            <ShieldCheck size={15} />
+                                            Панель администратора
                                         </Link>
                                     )}
 
                                     {user.role === "owner" && (
                                         <Link
                                             to="/owner/dashboard"
-                                            className="flex items-center gap-3 px-4 py-2.5 text-xs text-black/55 hover:text-primary hover:bg-surface transition-colors cursor-pointer"
+                                            className="flex items-center gap-3 px-4 py-3
+                                                text-sm text-[#F3EEE5]/75
+                                                hover:text-secondary hover:bg-white/5
+                                                transition-colors"
                                         >
-                                            <ShieldCheck size={14} />
-                                            Owner Panel
+                                            <ShieldCheck size={15} />
+                                            Кабинет ресторана
                                         </Link>
                                     )}
 
                                     <button
                                         onClick={logout}
-                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-error hover:bg-error-container/20 transition-colors border-t border-outline-variant/10 text-left cursor-pointer"
+                                        className="w-full flex items-center gap-3 px-4 py-3
+                                            text-sm text-red-300
+                                            hover:bg-white/5
+                                            transition-colors border-t border-secondary/20
+                                            text-left cursor-pointer"
                                     >
-                                        <LogOut size={14} /> Sign Out
+                                        <LogOut size={15} />
+                                        Выйти
                                     </button>
                                 </div>
                             )}
@@ -132,91 +197,148 @@ export default function Navbar() {
                         <>
                             <button
                                 onClick={() => setAuthModalOpen(true)}
-                                className={`text-sm transition-colors cursor-pointer ${scrolled || location.pathname !== "/" ? "text-black/55 hover:text-primary" : "text-white/80 hover:text-white"}`}
+                                className="text-sm text-[#F3EEE5]/80
+                                    hover:text-secondary transition-colors cursor-pointer"
                             >
-                                Sign In
+                                Войти
                             </button>
+
                             <button
                                 onClick={() => setAuthModalOpen(true)}
-                                className={`text-xs font-medium tracking-wider uppercase px-5 py-2.5 transition-soft cursor-pointer ${scrolled || location.pathname !== "/" ? "bg-primary text-white hover:bg-primary-container hover:text-secondary" : "bg-white text-primary hover:bg-secondary hover:text-white"}`}
+                                className="text-xs font-semibold tracking-wider
+                                    uppercase px-6 py-3
+                                    bg-secondary text-[#211B1D]
+                                    hover:bg-[#E8D5AD]
+                                    transition-soft cursor-pointer"
                             >
-                                Sign Up
+                                Регистрация
                             </button>
                         </>
                     )}
                 </div>
 
-                {/* Mobile Menu Button */}
+                {/* Кнопка мобильного меню */}
                 <div className="flex items-center md:hidden">
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className={`p-2 transition-colors cursor-pointer ${scrolled || location.pathname !== "/" ? "text-primary" : "text-white"}`}
-                        aria-label="Toggle Menu"
+                        className="p-2 text-secondary hover:text-[#F3EEE5]
+                            transition-colors cursor-pointer"
+                        aria-label="Открыть меню"
                     >
-                        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        {mobileMenuOpen
+                            ? <X size={25} />
+                            : <Menu size={25} />
+                        }
                     </button>
                 </div>
             </div>
 
-            {/* Mobile Menu Drawer */}
+            {/* Мобильное меню */}
             {mobileMenuOpen && (
-                <div className="md:hidden fixed inset-x-0 top-16 bg-white border-b border-outline-variant/20 py-6 px-6 z-50 ambient-shadow flex flex-col gap-5 animate-in slide-in-from-top duration-300">
-                    <Link to="/" className="text-base text-on-surface hover:text-primary">
-                        Discover
+                <div className="md:hidden fixed inset-x-0 top-16
+                    bg-[#211B1D] border-b border-secondary/30
+                    py-6 px-6 z-50 shadow-xl
+                    flex flex-col gap-5
+                    animate-in slide-in-from-top duration-300"
+                >
+                    <Link
+                        to="/"
+                        className="text-base text-[#F3EEE5] hover:text-secondary"
+                    >
+                        Главная
                     </Link>
-                    <Link to="/search" className="text-base text-on-surface hover:text-primary">
-                        Restaurants
+
+                    <Link
+                        to="/search"
+                        className="text-base text-[#F3EEE5] hover:text-secondary"
+                    >
+                        Рестораны
                     </Link>
+
                     <button
                         onClick={handleDashboardClick}
-                        className="text-base text-on-surface hover:text-primary text-left cursor-pointer"
+                        className="text-base text-[#F3EEE5]
+                            hover:text-secondary text-left cursor-pointer"
                     >
-                        Reservations
+                        Мои бронирования
                     </button>
 
-                    <div className="border-t border-outline-variant/10 my-2"></div>
+                    <div className="border-t border-secondary/20 my-2" />
 
                     {user ? (
                         <div className="flex flex-col gap-4">
+
                             <div className="flex items-center gap-3">
-                                <span className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-sm uppercase">
+                                <span className="w-10 h-10 rounded-full
+                                    bg-secondary/15 border border-secondary/40
+                                    flex items-center justify-center
+                                    text-secondary text-sm uppercase"
+                                >
                                     {user.name.charAt(0)}
                                 </span>
+
                                 <div>
-                                    <p className="text-sm text-primary">{user.name}</p>
-                                    <p className="text-xs text-black/55">{user.email}</p>
+                                    <p className="text-sm text-secondary">
+                                        {user.name}
+                                    </p>
+
+                                    <p className="text-xs text-[#F3EEE5]/55">
+                                        {user.email}
+                                    </p>
                                 </div>
                             </div>
-                            <Link to="/dashboard" className="text-sm font-medium text-black/55 hover:text-primary">
-                                My Bookings
+
+                            <Link
+                                to="/dashboard"
+                                className="text-sm text-[#F3EEE5]/80 hover:text-secondary"
+                            >
+                                Мои бронирования
                             </Link>
+
                             {user.role === "admin" && (
-                                <Link to="/admin/dashboard" className="text-sm font-medium text-black/55 hover:text-primary">
-                                    Admin Console
+                                <Link
+                                    to="/admin/dashboard"
+                                    className="text-sm text-[#F3EEE5]/80 hover:text-secondary"
+                                >
+                                    Панель администратора
                                 </Link>
                             )}
+
                             {user.role === "owner" && (
-                                <Link to="/owner/dashboard" className="text-sm font-medium text-black/55 hover:text-primary">
-                                    Owner Console
+                                <Link
+                                    to="/owner/dashboard"
+                                    className="text-sm text-[#F3EEE5]/80 hover:text-secondary"
+                                >
+                                    Кабинет ресторана
                                 </Link>
                             )}
-                            <button onClick={logout} className="text-sm font-medium text-error text-left cursor-pointer">
-                                Sign Out
+
+                            <button
+                                onClick={logout}
+                                className="text-sm text-red-300 text-left cursor-pointer"
+                            >
+                                Выйти
                             </button>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-3">
+
                             <button
                                 onClick={() => setAuthModalOpen(true)}
-                                className="w-full border border-outline-variant/50 text-center py-3 text-sm font-medium hover:border-primary cursor-pointer"
+                                className="w-full border border-secondary/40
+                                    text-[#F3EEE5] py-3 text-sm
+                                    hover:border-secondary cursor-pointer"
                             >
-                                Sign In
+                                Войти
                             </button>
+
                             <button
                                 onClick={() => setAuthModalOpen(true)}
-                                className="w-full bg-primary text-white text-center py-3 text-xs font-medium tracking-widest uppercase hover:bg-secondary cursor-pointer"
+                                className="w-full bg-secondary text-[#211B1D]
+                                    py-3 text-sm font-semibold
+                                    hover:bg-[#E8D5AD] cursor-pointer"
                             >
-                                Sign Up
+                                Регистрация
                             </button>
                         </div>
                     )}
