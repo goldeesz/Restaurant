@@ -1,12 +1,13 @@
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useState, useEffect } from "react";
+import type { FormEvent } from "react";
+
 import {
     useParams,
     useSearchParams,
+    useNavigate,
     Link,
 } from "react-router-dom";
+
 import { useAppContext } from "../context/AppContext.tsx";
 
 import Navbar from "../components/Navbar.tsx";
@@ -19,14 +20,12 @@ import BookingSuccess from "../components/booking/BookingSuccess.tsx";
 import BookingSummary from "../components/booking/BookingSummary.tsx";
 import BookingForm from "../components/booking/BookingForm.tsx";
 
-import {
-    dummyBookingData,
-    dummyRestaurant,
-} from "../assets/assets.ts";
+import api from "../lib/api.ts";
 
 export default function BookingConfirmation() {
     const { slug } = useParams<{ slug: string }>();
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     const { user } = useAppContext();
 
@@ -58,13 +57,24 @@ export default function BookingConfirmation() {
 
     // Загружаем информацию о ресторане
     useEffect(() => {
-        const fetchRestaurant = () => {
-            const foundRestaurant = dummyRestaurant.find(
-                (item: any) => item.slug === slug
-            );
+        const fetchRestaurant = async () => {
+            try {
+                setLoading(true);
 
-            setRestaurant(foundRestaurant || null);
-            setLoading(false);
+                const res = await api.get(`/restaurants/${slug}`);
+
+                setRestaurant(res.data);
+            } catch (error: any) {
+                toast.error(
+                    error?.response?.data?.message ||
+                    error?.message ||
+                    "Не удалось загрузить информацию о ресторане."
+                );
+
+                navigate("/");
+            } finally {
+                setLoading(false);
+            }
         };
 
         if (slug) {
@@ -72,11 +82,11 @@ export default function BookingConfirmation() {
         } else {
             setLoading(false);
         }
-    }, [slug]);
+    }, [slug, navigate]);
 
     // Подтверждение бронирования
     const handleConfirmSubmit = async (
-        e: React.FormEvent<HTMLFormElement>
+        e: FormEvent<HTMLFormElement>
     ) => {
         e.preventDefault();
 
@@ -92,11 +102,24 @@ export default function BookingConfirmation() {
             return;
         }
 
+        if (!restaurant?._id) {
+            toast.error("Не удалось определить ресторан для бронирования.");
+            return;
+        }
+
         try {
             setConfirming(true);
 
-            // Временная демонстрационная логика
-            setConfirmedBooking(dummyBookingData);
+            const res = await api.post("/bookings", {
+                restaurantId: restaurant._id,
+                date,
+                time: slot,
+                guests,
+                occasion,
+                specialRequests,
+            });
+
+            setConfirmedBooking(res.data);
 
             toast.success("Бронирование успешно подтверждено!");
         } catch (error: any) {

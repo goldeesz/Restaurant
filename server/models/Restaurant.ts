@@ -16,7 +16,7 @@ export interface IRestaurant extends Document {
     tags: string[]
     availableSlots: string[]
     featured: boolean
-    exlusive: boolean
+    exclusive: boolean
     owner: Types.ObjectId
     status: "pending" | "approved" | "rejected"
     totalSeats: number
@@ -38,9 +38,9 @@ const RestaursntSchema = new Schema<IRestaurant>(
         image: {type: String, default: ""},
         chef: {type: String, required: true},
         tags: [{type: String}],
-        availableSlots: [{types: String}],
-        featured: {type: Boolean, default: false},
-        exlusive: {type: Boolean, default: false},
+        availableSlots: { type: [String], default: [] },
+        featured: { type: Boolean, default: false },
+        exclusive: { type: Boolean, default: false },
         owner: {type: Schema.Types.ObjectId, ref: "User", required: true},
         status: {type: String, enum: ["pending", "approved", "rejected"], default: "pending"},
         totalSeats: {type: Number, default: 20}

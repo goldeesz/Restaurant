@@ -1,6 +1,3 @@
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Calendar, Users } from "lucide-react";
 
 interface BookingWidgetProps {

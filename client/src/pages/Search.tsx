@@ -39,8 +39,6 @@ export default function Search() {
     const [tempSearch, setTempSearch] = useState(searchVal);
     const [tempLocation, setTempLocation] = useState(locationVal);
 
-    // Названия кухонь для отображения на русском языке.
-    // В URL при этом продолжаем использовать английские значения.
     const cuisineLabels: Record<string, string> = {
         Italian: "Итальянская",
         French: "Французская",
@@ -60,7 +58,9 @@ export default function Search() {
         const fetchRestaurants = async () => {
            try {
             setLoading(true)
-            const res = await api.get(`/restaurants${searchParams.toString}`)
+            const query = searchParams.toString();
+            const url = query ? `/restaurants?${query}` : "/restaurants";
+            const res = await api.get(url);
             setRestaurants(res.data)
            } catch (error: any) {
             toast.error(error?.response?.data?.message || error?.message)
